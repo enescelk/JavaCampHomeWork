@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kodlamaio.hrms.business.abstracts.JobService;
+import kodlamaio.hrms.core.utilities.results.DataResult;
+import kodlamaio.hrms.core.utilities.results.ErrorDataResult;
+import kodlamaio.hrms.core.utilities.results.SuccessDataResult;
 import kodlamaio.hrms.dataAccess.abstracts.JobDao;
-import kodlamaio.hrms.entities.concretes.Job;
+import kodlamaio.hrms.entities.concretes.JobPositions;
 
 @Service
 public class JobManager implements JobService{
@@ -20,9 +23,19 @@ public class JobManager implements JobService{
 	}
 
 	@Override
-	public List<Job> getAll() {
+	public List<JobPositions> getAll() {
 		return this.jobDao.findAll();
 	}
+
+	@Override
+	public DataResult<JobPositions> add(JobPositions jobPositions) {
+		if(jobDao.findAllByPositionName(jobPositions.getPositionName()).stream().count() !=0) {
+			return new ErrorDataResult<JobPositions>(null,"Boyler bir is pozisyonu kayitli");
+		}
+		return new SuccessDataResult<JobPositions>(this.jobDao.save(jobPositions),"Basariyla is pozisyonu eklendi");
+	}
+	
+	
 	
 	
 }
